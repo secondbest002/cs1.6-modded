@@ -1,0 +1,24 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# CS 1.6 runtime temporary & dump files
+crashdumps/
+htmlcache/
+debug.log
+*.log
+*.bak
+*.tmp
+cstrike_downloads/
+cstrike/custom.hpk
+cstrike/*.hpk
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store

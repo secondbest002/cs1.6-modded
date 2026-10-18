@@ -1,0 +1,1 @@
+2025-06-03 16:34:34 (ERROR): Unable to save Practice file. Empty data. (filename: 'e:\dokumen\trinata_mk pemrograman\g\xa\counter-strike 1.6 original\cstrike\addons\yapb\data\train\de_airstrip.prc').

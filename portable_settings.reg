@@ -1,0 +1,18 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Valve]
+
+[HKEY_CURRENT_USER\Software\Valve\Half-Life]
+
+[HKEY_CURRENT_USER\Software\Valve\Half-Life\Settings]
+"Key"="5RP2E-EPH3K-BR3LG-KMGTE-Fn8PY"
+"ValveKey"="5RP2E-EPH3K-BR3LG-KMGTE-Fn8PY"
+"CrashCounter"=dword:00000000
+"Engine"=dword:00000001
+"bForceHighPoly"=dword:00000001
+
+[HKEY_CURRENT_USER\Software\Valve\CounterStrike]
+
+[HKEY_CURRENT_USER\Software\Valve\CounterStrike\Settings]
+"Key"="5RP2E-EPH3K-BR3LG-KMGTE-Fn8PY"
+"PlayerName"="Player"

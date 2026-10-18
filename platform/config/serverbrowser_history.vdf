@@ -1,0 +1,176 @@
+"filters"
+{
+	"favorites"
+	{
+		"1"
+		{
+			"name"		"Играй и наслаждайся! +18 © Public"
+			"address"		"46.174.50.220:27015"
+			"createdat"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"2"
+		{
+			"name"		"ЗОМБИ • СЕРВА4ОК ©"
+			"address"		"194.93.2.91:27015"
+			"createdat"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"3"
+		{
+			"name"		"█     ЗОЛОТАЯ МОЛОДЁЖЬ  █    MEAT74.COM █"
+			"address"		"46.174.50.245:27015"
+			"createdat"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"4"
+		{
+			"name"		"# [ZM] CS-DREAM | ZOMBIE CLASSIC"
+			"address"		"zm.cs-dream.su:27015"
+			"createdat"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"5"
+		{
+			"name"		"HEOCПOPИMЫЙ PUBLIC  ©"
+			"address"		"37.230.228.203:27015"
+			"createdat"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"6"
+		{
+			"name"		"Favorite server 0"
+			"address"		"51.89.113.227:27015"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+		"7"
+		{
+			"name"		"Favorite server 1"
+			"address"		"146.19.48.81:27019"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+		"8"
+		{
+			"name"		"Favorite server 2"
+			"address"		"217.156.22.22:27015"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+		"9"
+		{
+			"name"		"Favorite server 3"
+			"address"		"135.125.224.100:27015"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+		"10"
+		{
+			"name"		"Favorite server 4"
+			"address"		"135.125.249.177:27015"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+		"11"
+		{
+			"name"		"Favorite server 5"
+			"address"		"141.95.91.74:27015"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+		"12"
+		{
+			"name"		"Favorite server 6"
+			"address"		"141.95.120.214:27015"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+		"13"
+		{
+			"name"		"Favorite server 7"
+			"address"		"45.123.40.22:27015"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+		"14"
+		{
+			"name"		"Favorite server 8"
+			"address"		"185.254.98.50:27015"
+			"createdat"		"999"
+			"appID"		"0"
+			"accountid"		"0"
+		}
+	}
+	"history"
+	{
+		"1"
+		{
+			"name"		"Играй и наслаждайся! +18 © Public"
+			"address"		"46.174.50.220:27015"
+			"lastplayed"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"2"
+		{
+			"name"		"ЗОМБИ • СЕРВА4ОК ©"
+			"address"		"194.93.2.91:27015"
+			"lastplayed"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"3"
+		{
+			"name"		"█     ЗОЛОТАЯ МОЛОДЁЖЬ  █    MEAT74.COM █"
+			"address"		"46.174.50.245:27015"
+			"lastplayed"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"4"
+		{
+			"name"		"# [ZM] CS-DREAM | ZOMBIE CLASSIC"
+			"address"		"zm.cs-dream.su:27015"
+			"lastplayed"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"5"
+		{
+			"name"		"HEOCПOPИMЫЙ PUBLIC  ©"
+			"address"		"37.230.228.203:27015"
+			"lastplayed"		"1747229401"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"15"
+		{
+			"address"		"169.254.207.73:27015"
+			"lastplayed"		"1772449623"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+		"16"
+		{
+			"address"		"169.254.45.245:27015"
+			"lastplayed"		"1767000133"
+			"appID"		"10"
+			"accountid"		"0"
+		}
+	}
+	"lastupdate"		"1792281067"
+}

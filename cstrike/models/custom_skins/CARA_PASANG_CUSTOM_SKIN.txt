@@ -1,0 +1,27 @@
+========================================================================
+PANDUAN MEMASANG CUSTOM SKIN SENJATA UNTUK TIM CT & T (CS 1.6)
+========================================================================
+
+Folder ini digunakan untuk menaruh skin kustom pilihan Anda sendiri:
+- Folder "ct" : Taruh file v_*.mdl untuk Counter-Terrorist di sini.
+- Folder "t"  : Taruh file v_*.mdl untuk Terrorist di sini.
+
+LOGIKA KERJA SISTEM:
+1. Ketika Anda memegang senjata, mod akan memeriksa folder "custom_skins/ct" (jika Anda CT)
+   atau "custom_skins/t" (jika Anda T).
+2. Jika ada file skin di folder custom tersebut (misalnya v_knife.mdl), maka skin itu yang
+   akan langsung Anda pakai!
+3. Jika folder custom kosong atau senjata tersebut belum Anda isi skin kustom, mod otomatis
+   FALLBACK menggunakan default CS:GO pack (CT hands untuk CT, T hands untuk T).
+
+CONTOH:
+- Mau ganti pisau khusus CT jadi Karambit:
+  Copy file pisau Anda ke: cstrike/models/custom_skins/ct/v_knife.mdl
+- Mau ganti pisau khusus T jadi Butterfly:
+  Copy file pisau Anda ke: cstrike/models/custom_skins/t/v_knife.mdl
+
+Catatan:
+- Cukup file "v_*.mdl" (sudut pandang orang pertama) saja yang dimasukkan ke sini.
+- Nama file harus sesuai nama senjata CS 1.6:
+  v_knife.mdl, v_ak47.mdl, v_m4a1.mdl, v_awp.mdl, v_deagle.mdl, v_usp.mdl, v_glock18.mdl, dsb.
+========================================================================

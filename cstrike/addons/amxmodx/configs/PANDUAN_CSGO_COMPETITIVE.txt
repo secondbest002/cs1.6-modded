@@ -1,0 +1,129 @@
+========================================================================
+PANDUAN LENGKAP CS:GO COMPETITIVE MATCH MOD (CS 1.6)
+========================================================================
+
+Mod ini mengubah match Counter-Strike 1.6 menjadi mode kompetitif 
+resmi seperti pada Counter-Strike: Global Offensive / Counter-Strike 2 
+dengan format MR12 (Max 24 ronde, pemenang ditentukan pada 13 kemenangan),
+mendukung bermain SOLO melawan YaPB Bot maupun bermain MULTIPLAYER / LAN.
+
+========================================================================
+ALUR PERTANDINGAN (MATCH LIFECYCLE)
+========================================================================
+
+1. BABAK PEMANASAN (WARMUP DEATHMATCH):
+   - Begitu server/map dimulai, pemain berada di mode Warmup.
+   - Respawn instan 1.5 detik setelah mati.
+   - Uang otomatis $16,000 setiap respawn untuk mencoba senjata.
+   - HUD di atas layar menampilkan jumlah pemain yang ready: [ Ready: X / 10 ].
+
+2. SISTEM READY UP (.ready):
+   - Ketik ".ready" di chat untuk menyatakan Anda siap bertanding.
+   - Jika bermain SOLO bersama Bot YaPB:
+     Saat Anda ketik ".ready", seluruh bot di server OTOMATIS ikut ready!
+   - Ketika semua pemain di kedua tim telah ready, countdown 5 detik dimulai.
+
+3. BABAK PISAU (KNIFE ROUND):
+   - Setelah countdown, ronde pisau otomatis dimulai.
+   - Semua senjata api dan granat dilucuti, hanya menggunakan pisau.
+   - Pembelian senjata diblokir selama ronde pisau.
+   - Tim yang memenangkan ronde pisau berhak memilih side:
+     * Menu pop-up otomatis muncul di layar pemain pemenang.
+     * Atau ketik ".stay" (tetap di tim saat ini) / ".switch" (tukar tim).
+
+4. BABAK PERTAMA (FIRST HALF - ROUND 1 s/d 12):
+   - Match resmi LIVE!
+   - Uang awal di-reset ke $800 standar kompetitif.
+   - Format MR12: Tim pertama yang meraih 13 poin MENANG.
+
+5. TUKAR TIM (HALFTIME SWITCH):
+   - Setelah ronde ke-12 selesai, sistem otomatis HALFTIME:
+     * Semua pemain Counter-Terrorist ditukar menjadi Terrorist.
+     * Semua pemain Terrorist ditukar menjadi Counter-Terrorist.
+     * Skor tim ikut ditukar secara akurat.
+     * Uang di-reset kembali ke $800 untuk pistol round kedua.
+     * Match restart 3 detik otomatis untuk ronde live kedua.
+
+6. BABAK KEDUA (SECOND HALF - ROUND 13 s/d 24):
+   - Pertandingan berlanjut sampai ada tim yang mencapai 13 poin.
+   - Terdapat penanda [ MATCH POINT ] di HUD jika salah satu tim butuh 1 ronde lagi.
+
+7. OVERTIME (MR3) - JIKA SERI 12 - 12:
+   - Jika skor akhir regulation berakhir imbang 12 - 12, match lanjut ke Overtime.
+   - Format MR3: 3 ronde di babak pertama, tukar side 3 ronde di babak kedua.
+   - Uang awal Overtime: $10,000.
+   - Tim pertama yang meraih 16 poin keluar sebagai juara.
+
+========================================================================
+FITUR MEKANIK KHUSUS CS:GO
+========================================================================
+
+1. CS:GO LOSS BONUS LADDER:
+   - Mengikuti aturan tangga ekonomi CS:GO modern:
+     * Kalah 1x: $1,400
+     * Kalah 2x: $1,900
+     * Kalah 3x: $2,400
+     * Kalah 4x: $2,900
+     * Kalah 5x+: $3,400 (Maksimal)
+   - Berbeda dari CS 1.6 lama yang langsung mereset bonus ke level 0 saat menang,
+     mod ini mengadopsi aturan CS:GO: saat menang, level bonus hanya TURUN 1 TINGKAT!
+
+2. TACTICAL TIMEOUT (JEDA TAKTIKAL):
+   - Setiap tim memiliki jatah 1x timeout per babak (durasi 60 detik).
+   - Ketik ".timeout" atau ".pause" di chat.
+   - Timeout akan aktif di awal ronde berikutnya (freezetime).
+   - Seluruh pemain dibekukan (freeze) dengan countdown layar 60 detik.
+
+3. DAMAGE REPORT (RINGKASAN DAMAGE CS:GO):
+   - Setiap akhir ronde, rincian damage otomatis dicetak di chat:
+     Damage Given to "Bot Yuri" -> 84 in 3 hits (KILLED)
+     Damage Given to "Bot Dmitry" -> 40 in 1 hit
+   - Pemain juga bisa mengetik ".dmg" atau ".damage" kapan saja di chat.
+
+4. ROUND MVP ANNOUNCEMENT:
+   - Di setiap akhir ronde, sistem mengumumkan MVP ronde berdasarkan:
+     * Pemain dengan eliminasi (kill) terbanyak di ronde tersebut.
+     * Atau pemain yang berhasil melakukan Plant / Defuse C4.
+
+5. TOP MATCH HUD:
+   - HUD sinkron di bagian tengah atas layar menampilkan skor real-time:
+     [ CT: 7 ]   ROUND 11/24   [ 4 : T ]
+
+========================================================================
+DAFTAR PERINTAH CHAT (CHAT COMMANDS)
+========================================================================
+
+  Perintah Chat      | Fungsi
+  ------------------ | ---------------------------------------------------
+  .ready / !ready    | Menyatakan siap untuk memulai match
+  .unready           | Membatalkan status siap (sebelum countdown selesai)
+  .score             | Melihat skor match saat ini dan nomor ronde
+  .dmg / .damage     | Menampilkan rincian damage yang Anda berikan di ronde ini
+  .timeout / .pause  | Memanggil Tactical Timeout 60 detik untuk tim Anda
+  .stay              | Memilih untuk tetap di tim saat ini (setelah menang knife)
+  .switch            | Memilih untuk bertukar tim (setelah menang knife)
+
+========================================================================
+PENGATURAN CVAR (cstrike/addons/amxmodx/configs/csgo_competitive.cfg)
+========================================================================
+
+- amx_csgo_mode             : 1 = Aktif, 0 = Mati.
+- amx_csgo_maxrounds        : Format half (12 untuk MR12, 15 untuk MR15). Default: 12.
+- amx_csgo_kniferound       : 1 = Pakai Knife Round, 0 = Langsung match live.
+- amx_csgo_warmup           : 1 = Warmup deathmatch aktif, 0 = Mati.
+- amx_csgo_timeouts         : Jatah timeout per tim per half. Default: 1.
+- amx_csgo_timeout_duration : Durasi jeda timeout (detik). Default: 60.
+- amx_csgo_ot_money         : Uang awal saat Overtime. Default: 10000.
+- amx_csgo_bot_autoready    : 1 = YaPB Bot otomatis ready bersama pemain. Default: 1.
+- amx_csgo_lossbonus        : 1 = Gunakan CS:GO loss ladder decrement rule. Default: 1.
+
+========================================================================
+CARA BERMAIN SOLO DENGAN BOT (YaPB):
+========================================================================
+1. Jalankan game Counter-Strike 1.6 dan pilih New Game (misalnya de_dust2, de_inferno, de_mirage).
+2. Masuk ke tim CT atau T.
+3. Bot YaPB akan otomatis terisi ke dalam server.
+4. Nikmati pemanasan (Warmup) dengan senjata apa pun dan respawn bebas.
+5. Ketik ".ready" di chat. Bot akan otomatis ikut ready dan countdown 5 detik dimulai!
+6. Menangkan Knife Round, pilih side (.stay atau .switch), dan nikmati match 5v5 MR12!
+========================================================================

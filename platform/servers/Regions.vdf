@@ -1,0 +1,159 @@
+"Regions"
+{
+	"0"
+	{
+		"code"	"AR"
+	}
+	"1"
+	{
+		"code"	"AM"
+	}
+	"2"
+	{
+		"code"	"AZ"
+	}
+	"3"
+	{
+		"code"	"BY"
+	}
+	"4"
+	{
+		"code"	"BE"
+	}
+	"5"
+	{
+		"code"	"BG"
+	}
+	"6"
+	{
+		"code"	"CN"
+	}
+	"7"
+	{
+		"code"	"CZ"
+	}
+	"8"
+	{
+		"code"	"EE"
+	}
+	"9"
+	{
+		"code"	"FI"
+	}
+	"10"
+	{
+		"code"	"FR"
+	}
+	"11"
+	{
+		"code"	"GE"
+	}
+	"12"
+	{
+		"code"	"DE"
+	}
+	"13"
+	{
+		"code"	"GB"
+	}
+	"14"
+	{
+		"code"	"GR"
+	}
+	"15"
+	{
+		"code"	"HU"
+	}
+	"16"
+	{
+		"code"	"IL"
+	}
+	"17"
+	{
+		"code"	"JP"
+	}
+	"18"
+	{
+		"code"	"KZ"
+	}
+	"19"
+	{
+		"code"	"KG"
+	}
+	"20"
+	{
+		"code"	"LV"
+	}
+	"21"
+	{
+		"code"	"LT"
+	}
+	"22"
+	{
+		"code"	"MD"
+	}
+	"23"
+	{
+		"code"	"MN"
+	}
+	"24"
+	{
+		"code"	"NL"
+	}
+	"25"
+	{
+		"code"	"NO"
+	}
+	"26"
+	{
+		"code"	"PK"
+	}
+	"27"
+	{
+		"code"	"PL"
+	}
+	"28"
+	{
+		"code"	"RO"
+	}
+	"29"
+	{
+		"code"	"RU"
+	}
+	"30"
+	{
+		"code"	"RS"
+	}
+	"31"
+	{
+		"code"	"ES"
+	}
+	"32"
+	{
+		"code"	"SE"
+	}
+	"33"
+	{
+		"code"	"TJ"
+	}
+	"34"
+	{
+		"code"	"TR"
+	}
+	"35"
+	{
+		"code"	"TM"
+	}
+	"36"
+	{
+		"code"	"US"
+	}
+	"37"
+	{
+		"code"	"UA"
+	}
+	"38"
+	{
+		"code"	"UZ"
+	}
+}
