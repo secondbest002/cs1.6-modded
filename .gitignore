@@ -1,9 +1,20 @@
 # Byte-compiled / cache files
 __pycache__/
+*.pyc
 *.py[cod]
 *$py.class
 *.egg-info/
 .pytest_cache/
+
+# Git Multi-Worktree placement
+.worktrees/
+
+# Studio backups and caches
+.studio_backups/
+.sticker_backups/
+.undo_cache/
+.clean_cache/
+*.original_palettes.dat
 
 # CS 1.6 runtime temporary & dump files
 crashdumps/
