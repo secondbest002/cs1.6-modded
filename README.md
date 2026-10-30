@@ -1,26 +1,26 @@
 # Counter-Strike 1.6 Portable & Modular Hub
 
-Repositori resmi Counter-Strike 1.6 portable dengan arsitektur modular bercabang (branching model) dan jaminan portabilitas lintas perangkat (*zero friction on other devices*).
+Repositori resmi Counter-Strike 1.6 portable dengan arsitektur modular multi-worktree dan jaminan portabilitas lintas perangkat (*zero friction on other devices*).
 
 ---
 
-## 1. Arsitektur Repositori (Branching Model)
+## 1. Arsitektur Repositori (Git Multi-Worktree Model)
 
-Struktur cabang dirancang agar game dasar tetap murni (*clean base*), sementara setiap modifikasi dan modul terisolasi pada cabangnya masing-masing:
+Struktur repositori dirancang modular dengan pemisahan peran yang tegas antara engine dasar, modul tooling/GUI, mekanik gameplay/AMXX, dan rilis terpadu:
 
 ```
 main (Utama: Base Game Clean / Vanilla Portable)
- ├── mod/mod-manager-hub    (Ranting: Python GUI Mod Hub & Automated Test Suite)
- ├── mod/csgo-weapon-pack   (Ranting: CS:GO Weapon Pack & cstrike_addon Models/Maps)
- └── release/complete       (Ranting Integrasi: Game Utama + Seluruh Modifikasi Aktif)
+ ├── tools/studio-mod-hub   (Worktree: .worktrees/studio-mod-hub - Python GUI Mod Hub, Asset Studio, Tests)
+ ├── mod/amxx-mechanics     (Worktree: .worktrees/amxx-mechanics - AMXX Plugins, Bots, Sounds, Models)
+ └── release/complete       (Root Workspace: Rilis Lengkap Siap Main - Integrasi Seluruh Modul)
 ```
 
-| Branch | Deskripsi | Status |
-| :--- | :--- | :--- |
-| `main` | **Game Utama**: Instalasi Counter-Strike 1.6 vanilla bersih dan portable. Tanpa skin berat, tanpa mod pihak ketiga. Selalu siap main di perangkat apa pun. | Bersih / Base |
-| `mod/mod-manager-hub` | **Modul Tooling & Hub**: Aplikasi desktop Modern Dark Slate GUI (`tools/cs16_mod_hub/`), batch launcher (`CS16_Mod_Manager.bat`), dan 115 unit/E2E automated test suite. | Modul Tooling |
-| `mod/csgo-weapon-pack` | **Modul Konten**: Aset model senjata, tekstur, suara, dan map tambahan (`CSGO Weapon Pack - Update #4` & `cstrike_addon`). | Modul Konten |
-| `release/complete` | **Rilis Terpadu**: Penggabungan game utama dengan mod manager dan seluruh modifikasi yang sudah terverifikasi dan siap pakai langsung. | Siap Main |
+| Branch | Lokasi Direktori | Deskripsi | Status |
+| :--- | :--- | :--- | :--- |
+| `main` | Base ref | **Game Utama**: Instalasi Counter-Strike 1.6 vanilla bersih dan portable. Tanpa skin berat, tanpa mod pihak ketiga. Selalu siap main di perangkat apa pun. | Bersih / Base |
+| `tools/studio-mod-hub` | `.worktrees/studio-mod-hub` | **Modul Tooling & Studio**: Desktop Mod Hub GUI (`tools/cs16_mod_hub/`), CS16 Asset Studio 3D WebGL (`scripts/cs16_studio/`), dan 276 automated test suite. | Modul Tooling |
+| `mod/amxx-mechanics` | `.worktrees/amxx-mechanics` | **Modul Mekanik & Konten**: AMXX plugins (`cstrike/addons/amxmodx/`), bot YAPB (`cstrike/addons/yapb/`), sound pack (`cstrike/sound/weapons/csgo/`), POV configs, dan custom models. | Modul Mekanik |
+| `release/complete` | Root workspace (`.`) | **Rilis Terpadu**: Penggabungan game utama dengan mod manager dan seluruh modifikasi aktif yang sudah terverifikasi dan siap pakai langsung. | Siap Main |
 
 ---
 
@@ -34,7 +34,7 @@ Agar game dapat diunduh dan langsung dimainkan di PC/laptop lain tanpa kendala (
 2. **Relative Directory Anchoring**:
    - Seluruh launcher dan tool menggunakan path relatif `%~dp0`, sehingga game dapat diletakkan di drive mana pun (`C:`, `D:`, flashdisk, atau folder download) tanpa path rusak.
 3. **Pemisahan Mod Non-Destruktif**:
-   - Game mendukung layer `cstrike_addon/`. Modifikasi visual dapat diaktifkan atau dinonaktifkan tanpa merusak file inti `cstrike/`.
+   - Game mendukung layer modular. Modifikasi visual dan AMXX dapat diuji dan dikembangkan secara terisolasi di worktree tanpa merusak file inti.
 4. **1-Click Packaging**:
    - Jalankan `package_portable_release.bat` untuk membuat satu file zip portabel yang siap dikirim via Google Drive/flashdisk dan dimainkan di perangkat mana pun tanpa perlu install Git atau software tambahan.
 
@@ -53,23 +53,38 @@ Double-click:
 ```cmd
 CS16_Mod_Manager.bat
 ```
-*(Otomatis memeriksa Python dan menginstal dependensi GUI `customtkinter` & `pillow` jika diperlukan).*
+*(Otomatis memeriksa Python dan menginstal dependensi GUI jika diperlukan).*
+
+### Membuka CS16 Asset Studio (3D WebGL Inspector)
+Double-click:
+```cmd
+CS16_Asset_Studio.bat
+```
 
 ---
 
-## 4. Perintah Git untuk Beralih Ranting (Branches)
+## 4. Alur Kerja Git Multi-Worktree & Sinkronisasi
 
-Untuk beralih ke game dasar murni:
+Repositori ini menggunakan Git Multi-Worktree sehingga developer dapat bekerja secara simultan tanpa bolak-balik melakukan `git checkout`:
+
+### Lokasi Worktree
+- **Tooling & Studio**: Buka folder `.worktrees/studio-mod-hub` untuk mengedit GUI, script studio, dan tests.
+- **AMXX & Gameplay**: Buka folder `.worktrees/amxx-mechanics` untuk mengedit plugin AMXX, konfigurasi bot, sound weapon csgo, atau model.
+- **Rilis Terpadu**: Root direktori berada pada cabang `release/complete`.
+
+### Sinkronisasi 1-Klik ke Rilis
+Setelah melakukan commit di masing-masing worktree, jalankan script sinkronisasi dari root repositori:
+```cmd
+tools\sync_release.bat
+```
+Atau melalui command line Python:
 ```bash
-git checkout main
+python tools/sync_release.py --sync --push
 ```
 
-Untuk beralih ke cabang Mod Hub Tooling:
+Untuk melihat status seluruh worktree:
 ```bash
-git checkout mod/mod-manager-hub
+python tools/sync_release.py --status
 ```
 
-Untuk beralih ke rilis lengkap siap main:
-```bash
-git checkout release/complete
-```
+Panduan teknis mendalam mengenai arsitektur worktree dan penanganan merge dapat dibaca pada [`.agents/GIT_WORKTREE_GUIDE.md`](.agents/GIT_WORKTREE_GUIDE.md).
