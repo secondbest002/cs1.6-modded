@@ -15,6 +15,7 @@ __pycache__/
 .undo_cache/
 .clean_cache/
 *.original_palettes.dat
+*.zip
 
 # CS 1.6 runtime temporary & dump files
 crashdumps/
