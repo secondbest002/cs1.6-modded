@@ -1,0 +1,728 @@
+"PhysicObjectConfig"
+{
+	"VerifyBoneChunk"		"0"
+	"Crc32BoneChunk"		"cc3babe1"
+	"type"		"RagdollObject"
+	"overrideStudioCheckBBOX"		"1"
+	"rigidBodies"
+	{
+		"Head"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"16"
+			"origin"		"3.75 0 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"direction"		"0"
+				"size"		"3.25 3.75 0"
+			}
+		}
+		"Spine"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"4"
+			"origin"		"1.4000001 0.100000076 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"45.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"6 0.1 0"
+			}
+		}
+		"Pelvis"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"1"
+			"origin"		"5.399997 0.100000076 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"45.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"6 0.1 0"
+			}
+		}
+		"LArm"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"9"
+			"origin"		"3.6000009 -0.1 0"
+			"angles"		"0.80000114 83.2 4.2000003"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"2.5 8 0"
+			}
+		}
+		"LArm2"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"10"
+			"origin"		"6 0.9000001 -1"
+			"angles"		"-15 93 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"2.5 10 0"
+			}
+		}
+		"RArm"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"13"
+			"origin"		"2.6000004 0 0"
+			"angles"		"0.80000114 93.399994 4.2000003"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"2.5 8 0"
+			}
+		}
+		"RArm2"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"14"
+			"origin"		"5.9000015 0.9 0"
+			"angles"		"-0.99999994 93 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"2.5 10 0"
+			}
+		}
+		"LLeg"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"21"
+			"origin"		"7 0.20000386 0"
+			"angles"		"0 270 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"3.6 10 0"
+			}
+		}
+		"LLeg2"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"22"
+			"origin"		"7 0.20000386 0"
+			"angles"		"0 270 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"3 8 0"
+			}
+		}
+		"RLeg"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"26"
+			"origin"		"7 0.20000386 0"
+			"angles"		"0 270 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"3.6 10 0"
+			}
+		}
+		"RLeg2"
+		{
+			"InvertStateOnDeath"		"1"
+			"DebugDrawLevel"		"1"
+			"boneindex"		"27"
+			"origin"		"7 0.20000386 0"
+			"angles"		"0 270 0"
+			"forward"		"0 1 0"
+			"isLegacyConfig"		"0"
+			"pboneindex"		"-1"
+			"pboneoffset"		"0.000000"
+			"mass"		"30.000000"
+			"Density"		"1.000000"
+			"LinearFriction"		"1.000000"
+			"RollingFriction"		"0.200000"
+			"Restitution"		"0.000000"
+			"CCDRadius"		"0.850000"
+			"CCDThreshold"		"0.001000"
+			"LinearSleepingThreshold"		"20.000000"
+			"AngularSleepingThreshold"		"12.000000"
+			"collisionShape"
+			{
+				"type"		"Capsule"
+				"size"		"3 8 0"
+			}
+		}
+	}
+	"constraints"
+	{
+		"NativeConstraint|Spine|Head"
+		{
+			"type"		"ConeTwist"
+			"rigidbodyA"		"Spine"
+			"rigidbodyB"		"Head"
+			"originA"		"8 -1 0"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"ConeTwistSwingSpanLimit1"		"0.010000"
+				"ConeTwistSwingSpanLimit2"		"0.010000"
+				"ConeTwistTwistSpanLimit"		"0.200000"
+			}
+		}
+		"NativeConstraint|Pelvis|Spine"
+		{
+			"type"		"ConeTwist"
+			"rigidbodyA"		"Pelvis"
+			"rigidbodyB"		"Spine"
+			"originA"		"5.200001 -1 0"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"ConeTwistSwingSpanLimit1"		"0.100000"
+				"ConeTwistSwingSpanLimit2"		"0.100000"
+				"ConeTwistTwistSpanLimit"		"0.100000"
+			}
+		}
+		"NativeConstraint|Spine|LArm"
+		{
+			"type"		"ConeTwist"
+			"rigidbodyA"		"Spine"
+			"rigidbodyB"		"LArm"
+			"originA"		"2 -2 7"
+			"anglesA"		"90 0 58"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"ConeTwistSwingSpanLimit1"		"0.200000"
+				"ConeTwistSwingSpanLimit2"		"0.200000"
+				"ConeTwistTwistSpanLimit"		"0.200000"
+			}
+		}
+		"NativeConstraint|LArm|LArm2"
+		{
+			"type"		"ConeTwist"
+			"rigidbodyA"		"LArm"
+			"rigidbodyB"		"LArm2"
+			"originA"		"1 -5 1.1"
+			"anglesA"		"186 96 378.2"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"ConeTwistSwingSpanLimit1"		"0.200000"
+				"ConeTwistSwingSpanLimit2"		"0.200000"
+				"ConeTwistTwistSpanLimit"		"0.100000"
+			}
+		}
+		"NativeConstraint|Spine|RArm"
+		{
+			"type"		"ConeTwist"
+			"rigidbodyA"		"Spine"
+			"rigidbodyB"		"RArm"
+			"originA"		"3 -3 -7"
+			"anglesA"		"198 -74 166"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"ConeTwistSwingSpanLimit1"		"0.200000"
+				"ConeTwistSwingSpanLimit2"		"0.200000"
+				"ConeTwistTwistSpanLimit"		"0.200000"
+			}
+		}
+		"NativeConstraint|RArm|RArm2"
+		{
+			"type"		"ConeTwist"
+			"rigidbodyA"		"RArm"
+			"rigidbodyB"		"RArm2"
+			"originA"		"1 -5 1.1"
+			"anglesA"		"186 96 378.2"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"ConeTwistSwingSpanLimit1"		"0.200000"
+				"ConeTwistSwingSpanLimit2"		"0.200000"
+				"ConeTwistTwistSpanLimit"		"0.100000"
+			}
+		}
+		"NativeConstraint|Pelvis|LLeg"
+		{
+			"type"		"ConeTwist"
+			"rigidbodyA"		"Pelvis"
+			"rigidbodyB"		"LLeg"
+			"originA"		"-6 0.39999962 4"
+			"anglesA"		"180 0 0"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"ConeTwistSwingSpanLimit1"		"0.100000"
+				"ConeTwistSwingSpanLimit2"		"0.100000"
+				"ConeTwistTwistSpanLimit"		"0.250000"
+			}
+		}
+		"NativeConstraint|LLeg2|LLeg"
+		{
+			"type"		"Hinge"
+			"rigidbodyA"		"LLeg"
+			"rigidbodyB"		"LLeg2"
+			"originA"		"0 9 0"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"HingeLowLimit"		"-0.200000"
+				"HingeHighLimit"		"0.000000"
+			}
+		}
+		"NativeConstraint|Pelvis|RLeg"
+		{
+			"type"		"ConeTwist"
+			"rigidbodyA"		"Pelvis"
+			"rigidbodyB"		"RLeg"
+			"originA"		"-6 0.39999962 -4"
+			"anglesA"		"180 0 0"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"ConeTwistSwingSpanLimit1"		"0.100000"
+				"ConeTwistSwingSpanLimit2"		"0.100000"
+				"ConeTwistTwistSpanLimit"		"0.250000"
+			}
+		}
+		"NativeConstraint|RLeg2|RLeg"
+		{
+			"type"		"Hinge"
+			"rigidbodyA"		"RLeg"
+			"rigidbodyB"		"RLeg2"
+			"originA"		"0 9 0"
+			"forward"		"0 1 0"
+			"factors"
+			{
+				"HingeLowLimit"		"-0.200000"
+				"HingeHighLimit"		"0.000000"
+			}
+		}
+	}
+	"physicBehaviors"
+	{
+		"SimpleBuoyancy|Head"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"Head"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"1.050000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|Spine"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"Spine"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"1.050000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|Pelvis"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"Pelvis"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"1.050000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|LArm"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"LArm"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"0.950000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|LArm2"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"LArm2"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"0.950000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|RArm"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"RArm"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"0.950000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|RArm2"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"RArm2"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"0.950000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|LLeg"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"LLeg"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"0.475000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|LLeg2"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"LLeg2"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"0.475000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|RLeg"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"RLeg"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"0.475000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+		"SimpleBuoyancy|RLeg2"
+		{
+			"type"		"SimpleBuoyancy"
+			"rigidbodyA"		"RLeg2"
+			"factors"
+			{
+				"SimpleBuoyancyMagnitude"		"0.475000"
+				"SimpleBuoyancyLinearDamping"		"0.500000"
+				"SimpleBuoyancyAngularDamping"		"0.000000"
+			}
+		}
+	}
+	"animControls"
+	{
+		"1"
+		{
+			"sequence"		"101"
+			"gaitsequence"		"-1"
+			"animframe"		"44.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"2"
+		{
+			"sequence"		"102"
+			"gaitsequence"		"-1"
+			"animframe"		"44.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"3"
+		{
+			"sequence"		"103"
+			"gaitsequence"		"-1"
+			"animframe"		"60.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"4"
+		{
+			"sequence"		"104"
+			"gaitsequence"		"-1"
+			"animframe"		"35.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"5"
+		{
+			"sequence"		"105"
+			"gaitsequence"		"-1"
+			"animframe"		"60.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"6"
+		{
+			"sequence"		"106"
+			"gaitsequence"		"-1"
+			"animframe"		"66.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"7"
+		{
+			"sequence"		"107"
+			"gaitsequence"		"-1"
+			"animframe"		"35.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"8"
+		{
+			"sequence"		"108"
+			"gaitsequence"		"-1"
+			"animframe"		"66.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"9"
+		{
+			"sequence"		"109"
+			"gaitsequence"		"-1"
+			"animframe"		"35.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+		"10"
+		{
+			"sequence"		"110"
+			"gaitsequence"		"-1"
+			"animframe"		"35.000000"
+			"activityType"		"1"
+			"flags"		"1"
+			"controller_0"		"0"
+			"controller_1"		"0"
+			"controller_2"		"0"
+			"controller_3"		"0"
+			"blending_0"		"0"
+			"blending_1"		"0"
+			"blending_2"		"0"
+			"blending_3"		"0"
+		}
+	}
+}

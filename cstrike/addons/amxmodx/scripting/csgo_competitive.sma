@@ -11,10 +11,12 @@
 
 #define TASK_HUD         1001
 #define TASK_COUNTDOWN   1002
+#define TASK_WARMUP_TIMER 1003
 #define TASK_RESPAWN     1100
 #define TASK_TIMEOUT     1200
 #define TASK_SIDE_PICK   1300
 #define TASK_MATCH_END   1400
+#define TASK_BOT_EQUIP   1500
 
 enum {
     STATE_WARMUP = 0,
@@ -48,6 +50,7 @@ new g_OTTargetWinScore = 16;
 new CsTeams:g_KnifeWinner = CS_TEAM_UNASSIGNED;
 new g_KnifeChooserId = 0;
 new g_SidePickTimer = 15;
+new bool:g_bKnifeRoundLive = false;
 
 // Player Ready State
 new bool:g_PlayerReady[33];
@@ -61,6 +64,7 @@ new bool:g_TimeoutQueuedT = false;
 new bool:g_IsTimeoutActive = false;
 new g_TimeoutRemaining = 0;
 new CsTeams:g_TimeoutTeam = CS_TEAM_UNASSIGNED;
+new bool:g_bInFreezePeriod = false;
 
 // Damage Tracking (Current Round)
 new g_DamageDealt[33][33];
@@ -91,6 +95,12 @@ new pCvar_MvpCard;
 new pCvar_C4Timer;
 new pCvar_ScreenFade;
 new pCvar_DmgCard;
+new pCvar_FreezeTime;
+new pCvar_CurrentRound;
+new pCvar_WarmupTime;
+
+// Warmup DM Duration Tracker (in seconds)
+new g_WarmupTimeLeft = 3300;
 
 // Multiple HUD Sync Channels
 new g_HudSyncHeader;
@@ -145,6 +155,12 @@ public plugin_init()
     pCvar_C4Timer         = register_cvar("amx_csgo_c4_timer", "1"); // 1 = Show C4 Countdown in Top Bar, 0 = Disabled
     pCvar_ScreenFade      = register_cvar("amx_csgo_screenfade", "1"); // 1 = Enable cinematic screenfade transitions
     pCvar_DmgCard         = register_cvar("amx_csgo_dmg_card", "1"); // 1 = Show on-screen damage report card
+    pCvar_FreezeTime      = register_cvar("amx_csgo_freezetime", "20"); // 20 seconds freeze time (CS2 / FACEIT rule)
+    pCvar_CurrentRound    = register_cvar("amx_csgo_current_round", "0"); // Current live match round
+    pCvar_WarmupTime      = register_cvar("amx_csgo_warmuptime", "55"); // Warmup DM limit in minutes (default 55)
+    register_cvar("bot_savage_kniferound", "0"); // Savage AI Knife Round Signal
+    register_cvar("amx_csgo_is_warmup", "1"); // Signal whether Warmup DM is currently active
+    register_message(get_user_msgid("RoundTime"), "Msg_RoundTime");
 
     // Chat Commands
     register_clcmd("say", "HandleSay");
@@ -163,13 +179,16 @@ public plugin_init()
 
     // Ham Hooks
     RegisterHam(Ham_Spawn, "player", "OnPlayerSpawnPost", 1);
+    RegisterHam(Ham_Killed, "player", "OnPlayerKilledPre", 0);
     RegisterHam(Ham_Killed, "player", "OnPlayerKilledPost", 1);
     RegisterHam(Ham_TakeDamage, "player", "OnTakeDamagePost", 1);
     RegisterHam(Ham_Touch, "weaponbox", "OnWeaponTouchPre");
     RegisterHam(Ham_Touch, "armoury_entity", "OnWeaponTouchPre");
     RegisterHam(Ham_Touch, "weapon_shield", "OnWeaponTouchPre");
+    RegisterHam(Ham_Item_AddToPlayer, "weapon_c4", "OnC4AddToPlayer");
 
     // Game Events
+    register_event("HLTV", "Event_FreezeTimeStart", "a", "1=0", "2=0");
     register_event("CurWeapon", "Event_CurWeapon", "be", "1=1");
     register_event("SendAudio", "Event_TWin", "a", "2=%!MRAD_terwin");
     register_event("SendAudio", "Event_CTWin", "a", "2=%!MRAD_ctwin");
@@ -178,7 +197,8 @@ public plugin_init()
     register_logevent("LogEvent_RoundEnd", 2, "1=Round_End");
     register_logevent("LogEvent_Plant", 3, "2=Planted_The_Bomb");
     register_logevent("LogEvent_Defuse", 3, "2=Defused_The_Bomb");
-    register_logevent("LogEvent_TargetBombed", 6, "3=Target_Bombed");
+    register_logevent("LogEvent_TargetBombed", 3, "2=Target_Bombed");
+    register_logevent("LogEvent_TargetBombed", 2, "1=Target_Bombed");
 
     // Multiple HUD Channels
     g_HudSyncHeader    = CreateHudSyncObj();
@@ -221,6 +241,7 @@ public client_disconnected(id)
     g_PlayerReady[id] = false;
     ResetPlayerDamage(id);
     remove_task(id + TASK_RESPAWN);
+    remove_task(id + TASK_BOT_EQUIP);
 }
 
 // ========================================================================
@@ -232,6 +253,7 @@ public AdminCmd_StartMatch(id, level, cid)
         return PLUGIN_HANDLED;
 
     client_print(0, print_chat, "^x04[CS:GO Match] Admin force-started the match!");
+    remove_task(TASK_WARMUP_TIMER);
     remove_task(TASK_COUNTDOWN);
     StartLiveMatch();
     return PLUGIN_HANDLED;
@@ -243,6 +265,7 @@ public AdminCmd_RestartWarmup(id, level, cid)
         return PLUGIN_HANDLED;
 
     client_print(0, print_chat, "^x04[CS:GO Match] Admin reset the match to Warmup!");
+    remove_task(TASK_WARMUP_TIMER);
     remove_task(TASK_COUNTDOWN);
     remove_task(TASK_SIDE_PICK);
     remove_task(TASK_TIMEOUT);
@@ -360,9 +383,18 @@ public CS_InternalCommand(id, const cmd[])
 }
 
 // Continuous check: if any player or bot equips anything other than a knife during knife round, strip it instantly!
+// And during warmup DM, immediately strip C4 if player somehow equips it
 public Event_CurWeapon(id)
 {
-    if (g_MatchState == STATE_KNIFE_ROUND && is_user_alive(id))
+    if (g_MatchState == STATE_WARMUP && is_user_alive(id))
+    {
+        new weapon = read_data(2);
+        if (weapon == CSW_C4)
+        {
+            StripUserC4(id);
+        }
+    }
+    else if (g_MatchState == STATE_KNIFE_ROUND && is_user_alive(id))
     {
         new weapon = read_data(2);
         if (weapon != CSW_KNIFE)
@@ -375,10 +407,31 @@ public Event_CurWeapon(id)
     }
 }
 
-// Prevent picking up any dropped weapons, grenades, or armoury items during knife round
+// Intercept adding C4 to any player/bot during warmup DM and destroy it
+public OnC4AddToPlayer(ent, id)
+{
+    if (g_MatchState == STATE_WARMUP)
+    {
+        ExecuteHamB(Ham_Item_Kill, ent);
+        return HAM_SUPERCEDE;
+    }
+    return HAM_IGNORED;
+}
+
+// Prevent picking up dropped weapons or C4 during warmup (destroying weaponbox) or any weapons during knife round
 public OnWeaponTouchPre(entity, id)
 {
-    if (g_MatchState == STATE_KNIFE_ROUND)
+    if (g_MatchState == STATE_WARMUP)
+    {
+        static classname[32];
+        pev(entity, pev_classname, classname, charsmax(classname));
+        if (equal(classname, "weaponbox") || equal(classname, "cs2_dropped_rifle"))
+        {
+            set_pev(entity, pev_flags, pev(entity, pev_flags) | FL_KILLME);
+            return HAM_SUPERCEDE;
+        }
+    }
+    else if (g_MatchState == STATE_KNIFE_ROUND)
     {
         if (1 <= id <= MaxClients)
         {
@@ -386,6 +439,46 @@ public OnWeaponTouchPre(entity, id)
         }
     }
     return HAM_IGNORED;
+}
+
+// Safely strip C4 weapon from a player and disable planting capability
+stock StripUserC4(id)
+{
+    if (!is_user_alive(id))
+        return;
+
+    cs_set_user_plant(id, 0, 0);
+
+    new ent = -1;
+    while ((ent = engfunc(EngFunc_FindEntityByString, ent, "classname", "weapon_c4")) > 0)
+    {
+        if (pev(ent, pev_owner) == id)
+        {
+            ExecuteHamB(Ham_Item_Kill, ent);
+            set_pev(id, pev_weapons, pev(id, pev_weapons) & ~(1 << CSW_C4));
+            break;
+        }
+    }
+}
+
+// Purge all dropped weapons, C4, and custom rifles on the entire map during warmup
+stock CleanWarmupWeapons()
+{
+    new ent = -1;
+    while ((ent = engfunc(EngFunc_FindEntityByString, ent, "classname", "weapon_c4")) > 0)
+    {
+        ExecuteHamB(Ham_Item_Kill, ent);
+    }
+    ent = -1;
+    while ((ent = engfunc(EngFunc_FindEntityByString, ent, "classname", "weaponbox")) > 0)
+    {
+        set_pev(ent, pev_flags, pev(ent, pev_flags) | FL_KILLME);
+    }
+    ent = -1;
+    while ((ent = engfunc(EngFunc_FindEntityByString, ent, "classname", "cs2_dropped_rifle")) > 0)
+    {
+        set_pev(ent, pev_flags, pev(ent, pev_flags) | FL_KILLME);
+    }
 }
 
 // Helper to configure YaPB & PodBot knife-only behavior dynamically
@@ -633,14 +726,20 @@ public Task_MatchCountdown()
 // ========================================================================
 public StartKnifeRound()
 {
+    remove_task(TASK_WARMUP_TIMER);
     remove_task(TASK_COUNTDOWN);
 
     g_MatchState = STATE_KNIFE_ROUND;
+    g_bKnifeRoundLive = false;
     g_KnifeWinner = CS_TEAM_UNASSIGNED;
     g_KnifeChooserId = 0;
+    g_BombPlanted = false;
+
+    set_cvar_num("amx_csgo_is_warmup", 0);
 
     for (new i = 1; i <= MaxClients; i++)
     {
+        remove_task(i + TASK_BOT_EQUIP);
         remove_task(i + TASK_RESPAWN);
         if (is_user_connected(i))
         {
@@ -650,8 +749,14 @@ public StartKnifeRound()
 
     // Force bots (YaPB/PodBot) to knife-only & disable buying routines
     SetBotKnifeOnly(true);
+    set_cvar_num("bot_savage_kniferound", 1);
+    set_cvar_float("mp_roundtime", 1.92);
+    set_cvar_num("mp_freezetime", 3);
     set_cvar_num("mp_startmoney", 0);
     set_cvar_float("mp_buytime", 0.0);
+    set_cvar_num("mp_buy_anywhere", 0);
+    set_cvar_num("yb_csdm_mode", 0);
+    set_cvar_string("mp_round_infinite", "0");
     set_cvar_num("sv_restart", 1);
 
     // Visual Announcement (DHUD & Screen Flash)
@@ -673,25 +778,43 @@ public StartKnifeRound()
 // ========================================================================
 public StartLiveMatch()
 {
+    remove_task(TASK_WARMUP_TIMER);
     remove_task(TASK_COUNTDOWN);
     remove_task(TASK_SIDE_PICK);
 
     g_MatchState = STATE_LIVE_HALF_1;
     g_RoundNumber = 0;
+    set_pcvar_num(pCvar_CurrentRound, 1);
     g_ScoreCT = 0;
     g_ScoreT = 0;
     g_TimeoutsCT = 0;
     g_TimeoutsT = 0;
     g_LossStreakCT = 0;
     g_LossStreakT = 0;
+    g_BombPlanted = false;
+
+    set_cvar_num("amx_csgo_is_warmup", 0);
 
     // Restore bot buying & buytime
     SetBotKnifeOnly(false);
-    set_cvar_float("mp_buytime", 0.25);
+    g_bKnifeRoundLive = false;
+    set_cvar_num("bot_savage_kniferound", 0);
+    new freeze = get_pcvar_num(pCvar_FreezeTime);
+    if (freeze <= 0) freeze = 20;
+    set_cvar_num("mp_freezetime", freeze);
+    set_cvar_float("mp_roundtime", 1.92);
+    set_cvar_float("mp_buytime", 0.45);
+    set_cvar_num("mp_buy_anywhere", 0);
+    set_cvar_num("yb_csdm_mode", 0);
+    set_cvar_string("mp_round_infinite", "0");
     set_cvar_num("mp_startmoney", 800);
+
+    new pcvar_scavenge = get_cvar_pointer("bot_savage_scavenge");
+    if (pcvar_scavenge) set_pcvar_num(pcvar_scavenge, 1);
 
     for (new i = 1; i <= MaxClients; i++)
     {
+        remove_task(i + TASK_BOT_EQUIP);
         if (is_user_connected(i))
         {
             cs_set_user_money(i, 800);
@@ -722,6 +845,7 @@ public StartLiveMatch()
 public TriggerHalftime()
 {
     g_MatchState = STATE_HALFTIME;
+    g_BombPlanted = false;
 
     // Swap scores
     new temp_score = g_ScoreCT;
@@ -773,6 +897,7 @@ public TriggerHalftime()
 public Task_RestartSecondHalf()
 {
     g_MatchState = STATE_LIVE_HALF_2;
+    set_pcvar_num(pCvar_CurrentRound, g_MaxRoundsHalf + 1);
     set_cvar_num("sv_restart", 1);
 
     set_dhudmessage(100, 255, 120, -1.0, 0.28, 2, 0.1, 3.5, 0.1, 1.0);
@@ -787,10 +912,16 @@ public Task_RestartSecondHalf()
 public TriggerOvertime()
 {
     g_MatchState = STATE_OVERTIME_1;
+    g_BombPlanted = false;
     g_OTRoundNumber = 0;
+    set_pcvar_num(pCvar_CurrentRound, (g_MaxRoundsHalf * 2) + 1);
     g_OTTargetWinScore = g_ScoreCT + 4; // Need 4 wins out of 6 OT rounds to win (e.g. 16 in MR12)
 
     new ot_money = get_pcvar_num(pCvar_OTMoney);
+    new freeze = get_pcvar_num(pCvar_FreezeTime);
+    if (freeze <= 0) freeze = 20;
+    set_cvar_num("mp_freezetime", freeze);
+    set_cvar_float("mp_buytime", 0.45);
     set_cvar_num("mp_startmoney", ot_money);
 
     for (new i = 1; i <= MaxClients; i++)
@@ -979,10 +1110,76 @@ public FreezeAllPlayers(bool:freeze)
 // ========================================================================
 // ROUND EVENTS & ECONOMY
 // ========================================================================
+public Event_FreezeTimeStart()
+{
+    if (g_MatchState == STATE_WARMUP)
+    {
+        g_bInFreezePeriod = false;
+        return;
+    }
+
+    g_bInFreezePeriod = true;
+
+    // Freeze all bots in spawn alongside human players during freeze time
+    for (new i = 1; i <= MaxClients; i++)
+    {
+        if (is_user_alive(i) && is_user_bot(i))
+        {
+            new flags = pev(i, pev_flags);
+            set_pev(i, pev_flags, flags | FL_FROZEN);
+            set_pev(i, pev_velocity, Float:{0.0, 0.0, 0.0});
+        }
+    }
+}
+
 public LogEvent_RoundStart()
 {
     if (get_pcvar_num(pCvar_Mode) == 0)
         return;
+
+    g_bInFreezePeriod = false;
+
+    // Unfreeze all players and bots when freeze time expires
+    for (new i = 1; i <= MaxClients; i++)
+    {
+        if (is_user_alive(i))
+        {
+            new flags = pev(i, pev_flags);
+            set_pev(i, pev_flags, flags & ~FL_FROZEN);
+        }
+    }
+
+    // Reset bomb state on every round start
+    g_BombPlanted = false;
+
+    if (g_MatchState == STATE_WARMUP)
+    {
+        CleanWarmupWeapons();
+
+        new warmup_mins = get_pcvar_num(pCvar_WarmupTime);
+        if (warmup_mins <= 0) warmup_mins = 55;
+
+        set_cvar_float("mp_roundtime", float(warmup_mins));
+        set_cvar_float("mp_buytime", 999.0);
+        set_cvar_num("mp_buy_anywhere", 1);
+        set_cvar_num("yb_csdm_mode", 1);
+        set_cvar_string("mp_round_infinite", "abcdef");
+        set_cvar_num("mp_freezetime", 0);
+        set_cvar_num("bot_savage_kniferound", 0);
+        set_cvar_num("amx_csgo_is_warmup", 1);
+
+        message_begin(MSG_ALL, get_user_msgid("RoundTime"));
+        write_short(g_WarmupTimeLeft);
+        message_end();
+    }
+    else
+    {
+        set_cvar_num("amx_csgo_is_warmup", 0);
+        if (g_MatchState == STATE_KNIFE_ROUND)
+        {
+            g_bKnifeRoundLive = true;
+        }
+    }
 
     // Reset damage tracking and MVP kills for new round
     for (new i = 1; i <= MaxClients; i++)
@@ -1023,6 +1220,9 @@ public LogEvent_RoundEnd()
     if (get_pcvar_num(pCvar_Mode) == 0)
         return;
 
+    // Reset bomb state on round end
+    g_BombPlanted = false;
+
     // Print Damage Summary to all players
     PrintRoundDamageSummary();
 
@@ -1032,18 +1232,22 @@ public LogEvent_RoundEnd()
 
 public Event_CTWin()
 {
+    g_BombPlanted = false;
     HandleRoundWin(CS_TEAM_CT);
 }
 
 public Event_TWin()
 {
+    g_BombPlanted = false;
     HandleRoundWin(CS_TEAM_T);
 }
 
 public Event_RoundDraw()
 {
-    if (g_MatchState == STATE_KNIFE_ROUND)
+    g_BombPlanted = false;
+    if (g_MatchState == STATE_KNIFE_ROUND && g_bKnifeRoundLive)
     {
+        g_bKnifeRoundLive = false;
         client_print(0, print_chat, "^x04[CS:GO Match] Knife round was a DRAW! Restarting knife round...");
         set_task(2.0, "StartKnifeRound");
     }
@@ -1056,6 +1260,8 @@ public HandleRoundWin(CsTeams:winning_team)
 
     if (g_MatchState == STATE_KNIFE_ROUND)
     {
+        g_bKnifeRoundLive = false;
+        set_cvar_num("bot_savage_kniferound", 0);
         g_KnifeWinner = winning_team;
         g_MatchState = STATE_SIDE_PICK;
         g_SidePickTimer = 15;
@@ -1087,6 +1293,7 @@ public HandleRoundWin(CsTeams:winning_team)
     if (g_MatchState == STATE_LIVE_HALF_1 || g_MatchState == STATE_LIVE_HALF_2)
     {
         g_RoundNumber++;
+        set_pcvar_num(pCvar_CurrentRound, g_RoundNumber + 1);
 
         if (winning_team == CS_TEAM_CT)
         {
@@ -1137,6 +1344,7 @@ public HandleRoundWin(CsTeams:winning_team)
     else if (g_MatchState == STATE_OVERTIME_1 || g_MatchState == STATE_OVERTIME_2)
     {
         g_OTRoundNumber++;
+        set_pcvar_num(pCvar_CurrentRound, (g_MaxRoundsHalf * 2) + g_OTRoundNumber + 1);
         if (winning_team == CS_TEAM_CT) g_ScoreCT++;
         else if (winning_team == CS_TEAM_T) g_ScoreT++;
 
@@ -1305,12 +1513,57 @@ public OnPlayerSpawnPost(id)
         cs_set_user_money(id, 16000);
         cs_set_user_armor(id, 100, CS_ARMOR_VESTHELM);
         give_item(id, "weapon_hegrenade");
+
+        // Disallow C4 and planting during warmup DM
+        cs_set_user_plant(id, 0, 0);
+        if (user_has_weapon(id, CSW_C4))
+        {
+            StripUserC4(id);
+        }
+
+        // Enforce buytime check disabled and buy anywhere
+        set_cvar_float("mp_buytime", 999.0);
+        set_cvar_num("mp_buy_anywhere", 1);
+
+        // Show shopping cart buyzone HUD icon and sync round clock for human player
+        if (!is_user_bot(id))
+        {
+            static msgRoundTime;
+            if (!msgRoundTime) msgRoundTime = get_user_msgid("RoundTime");
+            message_begin(MSG_ONE_UNRELIABLE, msgRoundTime, _, id);
+            write_short(g_WarmupTimeLeft);
+            message_end();
+
+            static msgStatusIcon;
+            if (!msgStatusIcon) msgStatusIcon = get_user_msgid("StatusIcon");
+            message_begin(MSG_ONE_UNRELIABLE, msgStatusIcon, _, id);
+            write_byte(1);
+            write_string("buyzone");
+            write_byte(0);
+            write_byte(160);
+            write_byte(0);
+            message_end();
+        }
+
+        if (is_user_bot(id))
+        {
+            remove_task(id + TASK_BOT_EQUIP);
+            set_task(0.4, "Task_WarmupBotEquip", id + TASK_BOT_EQUIP);
+        }
     }
     else if (g_MatchState == STATE_KNIFE_ROUND)
     {
         cs_set_user_money(id, 0);
         // 0.1s delay ensures engine default Glock/USP is given first and then cleanly stripped
         set_task(0.1, "Task_StripToKnife", id);
+    }
+
+    // Freeze bots during freeze time in live match & knife round
+    if (g_MatchState != STATE_WARMUP && g_bInFreezePeriod && is_user_bot(id))
+    {
+        new flags = pev(id, pev_flags);
+        set_pev(id, pev_flags, flags | FL_FROZEN);
+        set_pev(id, pev_velocity, Float:{0.0, 0.0, 0.0});
     }
 
     return HAM_IGNORED;
@@ -1327,6 +1580,20 @@ public Task_StripToKnife(id)
     }
 }
 
+public OnPlayerKilledPre(victim, attacker, shouldgib)
+{
+    if (victim < 1 || victim > MaxClients)
+        return HAM_IGNORED;
+
+    if (g_MatchState == STATE_WARMUP)
+    {
+        // Strip weapons so the dead body drops zero weaponboxes on the ground
+        strip_user_weapons(victim);
+    }
+
+    return HAM_IGNORED;
+}
+
 public OnPlayerKilledPost(victim, attacker, shouldgib)
 {
     if (victim < 1 || victim > MaxClients)
@@ -1334,6 +1601,7 @@ public OnPlayerKilledPost(victim, attacker, shouldgib)
 
     if (g_MatchState == STATE_WARMUP)
     {
+        remove_task(victim + TASK_BOT_EQUIP);
         // Respawn after 1.5 seconds in warmup
         set_task(1.5, "Task_WarmupRespawn", victim + TASK_RESPAWN);
     }
@@ -1362,6 +1630,131 @@ public Task_WarmupRespawn(taskid)
     }
 }
 
+public Task_WarmupBotEquip(taskid)
+{
+    new id = taskid - TASK_BOT_EQUIP;
+    if (!is_user_connected(id) || !is_user_alive(id) || !is_user_bot(id) || g_MatchState != STATE_WARMUP)
+        return;
+
+    // If bot already bought a primary weapon, leave it untouched
+    if (cs_get_user_hasprim(id))
+        return;
+
+    new CsTeams:team = cs_get_user_team(id);
+    new rnd = random_num(1, 10);
+
+    if (team == CS_TEAM_T)
+    {
+        if (rnd <= 5)
+        {
+            give_item(id, "weapon_ak47");
+            cs_set_user_bpammo(id, CSW_AK47, 90);
+        }
+        else if (rnd <= 7)
+        {
+            give_item(id, "weapon_awp");
+            cs_set_user_bpammo(id, CSW_AWP, 30);
+            give_item(id, "weapon_deagle");
+            cs_set_user_bpammo(id, CSW_DEAGLE, 35);
+        }
+        else if (rnd <= 9)
+        {
+            give_item(id, "weapon_galil");
+            cs_set_user_bpammo(id, CSW_GALIL, 90);
+        }
+        else
+        {
+            give_item(id, "weapon_scout");
+            cs_set_user_bpammo(id, CSW_SCOUT, 90);
+            give_item(id, "weapon_deagle");
+            cs_set_user_bpammo(id, CSW_DEAGLE, 35);
+        }
+    }
+    else if (team == CS_TEAM_CT)
+    {
+        if (rnd <= 5)
+        {
+            give_item(id, "weapon_m4a1");
+            cs_set_user_bpammo(id, CSW_M4A1, 90);
+        }
+        else if (rnd <= 7)
+        {
+            give_item(id, "weapon_awp");
+            cs_set_user_bpammo(id, CSW_AWP, 30);
+            give_item(id, "weapon_deagle");
+            cs_set_user_bpammo(id, CSW_DEAGLE, 35);
+        }
+        else if (rnd <= 9)
+        {
+            give_item(id, "weapon_famas");
+            cs_set_user_bpammo(id, CSW_FAMAS, 90);
+        }
+        else
+        {
+            give_item(id, "weapon_scout");
+            cs_set_user_bpammo(id, CSW_SCOUT, 90);
+            give_item(id, "weapon_deagle");
+            cs_set_user_bpammo(id, CSW_DEAGLE, 35);
+        }
+    }
+
+    give_item(id, "item_assaultsuit");
+}
+
+public Task_WarmupTimer()
+{
+    if (g_MatchState != STATE_WARMUP)
+    {
+        remove_task(TASK_WARMUP_TIMER);
+        return;
+    }
+
+    if (g_WarmupTimeLeft > 0)
+    {
+        g_WarmupTimeLeft--;
+        if (g_WarmupTimeLeft == 300)
+        {
+            client_print(0, print_chat, "^x04[CS:GO Match]^x01 Warmup ending in 5 minutes! Type .ready when prepared.");
+        }
+        else if (g_WarmupTimeLeft == 60)
+        {
+            client_print(0, print_chat, "^x04[CS:GO Match]^x01 Warmup ending in 1 minute!");
+        }
+    }
+    else
+    {
+        // 55 minutes finished! Auto-start match countdown
+        remove_task(TASK_WARMUP_TIMER);
+        client_print(0, print_chat, "^x04[CS:GO Match]^x01 Warmup time limit reached! Starting match countdown...");
+
+        for (new i = 1; i <= MaxClients; i++)
+        {
+            if (is_user_connected(i))
+            {
+                new CsTeams:team = cs_get_user_team(i);
+                if (team == CS_TEAM_CT || team == CS_TEAM_T)
+                {
+                    g_PlayerReady[i] = true;
+                }
+            }
+        }
+
+        remove_task(TASK_COUNTDOWN);
+        g_MatchState = STATE_COUNTDOWN;
+        g_CountdownTimer = 5;
+        set_task(1.0, "Task_MatchCountdown", TASK_COUNTDOWN, _, _, "b");
+    }
+}
+
+public Msg_RoundTime(msg_id, msg_dest, msg_entity)
+{
+    if (g_MatchState == STATE_WARMUP)
+    {
+        set_msg_arg_int(1, ARG_SHORT, g_WarmupTimeLeft);
+    }
+    return PLUGIN_CONTINUE;
+}
+
 public OnTakeDamagePost(victim, inflictor, attacker, Float:damage, damagebits)
 {
     if (attacker < 1 || attacker > MaxClients || victim < 1 || victim > MaxClients || attacker == victim)
@@ -1381,6 +1774,9 @@ public OnTakeDamagePost(victim, inflictor, attacker, Float:damage, damagebits)
 
 public LogEvent_Plant()
 {
+    if (g_MatchState == STATE_WARMUP)
+        return;
+
     new loguser[80], name[32];
     read_logargv(0, loguser, charsmax(loguser));
     parse_loguser(loguser, name, charsmax(name));
@@ -1598,7 +1994,9 @@ public Task_UpdateHUD()
                 }
             }
 
-            formatex(hud_msg, charsmax(hud_msg), "★ CS:GO WARMUP LOBBY ★^nReady: [ %d / %d ]  —  Type .ready in chat", ready, total);
+            new mins = g_WarmupTimeLeft / 60;
+            new secs = g_WarmupTimeLeft % 60;
+            formatex(hud_msg, charsmax(hud_msg), "★ CS:GO WARMUP LOBBY [ %02d:%02d ] ★^nReady: [ %d / %d ]  —  Type .ready in chat", mins, secs, ready, total);
             set_hudmessage(220, 220, 220, -1.0, 0.02, 0, 0.0, 1.1, 0.1, 0.1, -1);
             ShowSyncHudMsg(0, g_HudSyncHeader, "%s", hud_msg);
         }
@@ -1635,6 +2033,16 @@ public Task_UpdateHUD()
             }
             else
             {
+                if (g_BombPlanted && get_pcvar_num(pCvar_C4Timer) == 1)
+                {
+                    new Float:elapsed = get_gametime() - g_BombPlantedTime;
+                    if (elapsed > (float(g_C4TimerCvar) + 1.0))
+                    {
+                        // Bomb has already detonated/expired - auto clear bomb state immediately
+                        g_BombPlanted = false;
+                    }
+                }
+
                 if (g_BombPlanted && get_pcvar_num(pCvar_C4Timer) == 1)
                 {
                     new Float:elapsed = get_gametime() - g_BombPlantedTime;
@@ -1766,6 +2174,7 @@ public ResetToWarmup()
     g_ScoreCT = 0;
     g_ScoreT = 0;
     g_RoundNumber = 0;
+    set_pcvar_num(pCvar_CurrentRound, 0);
     g_TimeoutsCT = 0;
     g_TimeoutsT = 0;
     g_TimeoutQueuedCT = false;
@@ -1773,22 +2182,50 @@ public ResetToWarmup()
     g_IsTimeoutActive = false;
     g_LossStreakCT = 0;
     g_LossStreakT = 0;
+    g_BombPlanted = false;
+    g_bInFreezePeriod = false;
+
+    CleanWarmupWeapons();
+
+    new pcvar_scavenge = get_cvar_pointer("bot_savage_scavenge");
+    if (pcvar_scavenge) set_pcvar_num(pcvar_scavenge, 0);
+
+    new warmup_mins = get_pcvar_num(pCvar_WarmupTime);
+    if (warmup_mins <= 0) warmup_mins = 55;
+    g_WarmupTimeLeft = warmup_mins * 60;
 
     // Restore bot buying & buytime
     SetBotKnifeOnly(false);
-    set_cvar_float("mp_buytime", 0.25);
+    g_bKnifeRoundLive = false;
+    set_cvar_num("bot_savage_kniferound", 0);
+    set_cvar_num("amx_csgo_is_warmup", 1);
+    set_cvar_num("mp_freezetime", 0);
+    set_cvar_float("mp_roundtime", float(warmup_mins));
+    set_cvar_float("mp_buytime", 999.0);
+    set_cvar_num("mp_buy_anywhere", 1);
+    set_cvar_num("yb_csdm_mode", 1);
+    set_cvar_string("mp_round_infinite", "abcdef");
+
+    remove_task(TASK_WARMUP_TIMER);
+    set_task(1.0, "Task_WarmupTimer", TASK_WARMUP_TIMER, _, _, "b");
 
     for (new i = 1; i <= MaxClients; i++)
     {
         g_PlayerReady[i] = false;
         ResetPlayerDamage(i);
         remove_task(i + TASK_RESPAWN);
+        remove_task(i + TASK_BOT_EQUIP);
+        if (is_user_alive(i))
+        {
+            new flags = pev(i, pev_flags);
+            set_pev(i, pev_flags, flags & ~FL_FROZEN);
+        }
     }
 
     set_cvar_num("mp_startmoney", 16000);
     set_cvar_num("sv_restart", 1);
 
-    client_print(0, print_chat, "^x04[CS:GO Match] Warmup Mode Active! Type .ready in chat to play.");
+    client_print(0, print_chat, "^x04[CS:GO Match] Warmup DM Active (%d minutes)! Buy anytime & type .ready when prepared.", warmup_mins);
 }
 
 public ResetPlayerDamage(id)
