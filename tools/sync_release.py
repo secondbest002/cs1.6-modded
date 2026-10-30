@@ -27,6 +27,12 @@ def find_git():
     user_git = os.path.expanduser(r'~\AppData\Local\Programs\Git\cmd\git.exe')
     if os.path.exists(user_git):
         return user_git
+    for standard_path in [
+        r'C:\Program Files\Git\cmd\git.exe',
+        r'C:\Program Files (x86)\Git\cmd\git.exe'
+    ]:
+        if os.path.exists(standard_path):
+            return standard_path
     which_git = shutil.which('git')
     if which_git:
         return which_git
@@ -133,6 +139,11 @@ def sync_release(root, push=False):
         print("        Switch to release/complete before running sync: git checkout release/complete")
         return False
 
+    if root_info["dirty"]:
+        print(f"[ERROR] Root workspace has uncommitted changes to tracked files.")
+        print("        Please commit, stash, or revert changes in the root workspace before synchronizing.")
+        return False
+
     # 2. Verify worktrees exist
     studio_wt = root / ".worktrees" / "studio-mod-hub"
     amxx_wt = root / ".worktrees" / "amxx-mechanics"
@@ -165,6 +176,8 @@ def sync_release(root, push=False):
         print("[ERROR] Merge of 'tools/studio-mod-hub' failed!")
         print(merge1.stdout.strip())
         print(merge1.stderr.strip())
+        print("        To abort this merge and restore previous state, run: git merge --abort")
+        print("        Or resolve conflicts manually and commit the result.")
         return False
     print("  " + (merge1.stdout.strip().splitlines()[0] if merge1.stdout.strip() else "[OK] Merged cleanly."))
 
@@ -175,6 +188,8 @@ def sync_release(root, push=False):
         print("[ERROR] Merge of 'mod/amxx-mechanics' failed!")
         print(merge2.stdout.strip())
         print(merge2.stderr.strip())
+        print("        To abort this merge and restore previous state, run: git merge --abort")
+        print("        Or resolve conflicts manually and commit the result.")
         return False
     print("  " + (merge2.stdout.strip().splitlines()[0] if merge2.stdout.strip() else "[OK] Merged cleanly."))
 
@@ -200,7 +215,7 @@ def push_all(root, studio_wt=None, amxx_wt=None):
     # Push tools/studio-mod-hub
     if studio_wt.exists():
         print("\n[*] Pushing 'tools/studio-mod-hub' to origin...")
-        p1 = run_git(['push', 'origin', 'tools/studio-mod-hub'], cwd=studio_wt)
+        p1 = run_git(['push', '-u', 'origin', 'tools/studio-mod-hub'], cwd=studio_wt)
         if p1.returncode != 0:
             print(f"[WARN] Failed to push tools/studio-mod-hub: {p1.stderr.strip()}")
         else:
@@ -209,7 +224,7 @@ def push_all(root, studio_wt=None, amxx_wt=None):
     # Push mod/amxx-mechanics
     if amxx_wt.exists():
         print("\n[*] Pushing 'mod/amxx-mechanics' to origin...")
-        p2 = run_git(['push', 'origin', 'mod/amxx-mechanics'], cwd=amxx_wt)
+        p2 = run_git(['push', '-u', 'origin', 'mod/amxx-mechanics'], cwd=amxx_wt)
         if p2.returncode != 0:
             print(f"[WARN] Failed to push mod/amxx-mechanics: {p2.stderr.strip()}")
         else:
@@ -217,7 +232,7 @@ def push_all(root, studio_wt=None, amxx_wt=None):
 
     # Push release/complete
     print("\n[*] Pushing 'release/complete' to origin...")
-    p3 = run_git(['push', 'origin', 'release/complete'], cwd=root)
+    p3 = run_git(['push', '-u', 'origin', 'release/complete'], cwd=root)
     if p3.returncode != 0:
         print(f"[WARN] Failed to push release/complete: {p3.stderr.strip()}")
         return False
