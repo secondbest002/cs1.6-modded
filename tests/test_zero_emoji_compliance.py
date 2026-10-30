@@ -34,6 +34,11 @@ TARGET_FILES = [
     "tools/cs16_mod_hub/core/cfg_utils.py",
     "tools/cs16_mod_hub/test_api_runner.py",
     "tests/test_mod_hub_modern.py",
+    "tools/sync_release.py",
+    "tools/sync_release.bat",
+    ".agents/GIT_WORKTREE_GUIDE.md",
+    "README.md",
+    "tests/test_sync_release.py",
 ]
 
 
