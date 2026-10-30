@@ -81,6 +81,7 @@ public plugin_init()
 
     // Weapon Hooks
     RegisterHam(Ham_Item_Deploy, "weapon_m4a1", "OnM4Deploy_Post", 1);
+    RegisterHam(Ham_Item_AddToPlayer, "weapon_m4a1", "OnM4AddToPlayer_Post", 1);
     RegisterHam(Ham_Weapon_SecondaryAttack, "weapon_m4a1", "OnM4SecondaryAttack_Pre", 0);
     register_forward(FM_SetModel, "OnSetModel_Post", 1);
 
@@ -124,6 +125,23 @@ public client_disconnected(id)
 // Weapon Deployment & Model Setting
 // -------------------------------------------------------------
 
+public OnM4AddToPlayer_Post(iWpn, id)
+{
+    if (!get_pcvar_num(pCvar_Enable) || !pev_valid(iWpn) || !is_user_alive(id))
+        return HAM_IGNORED;
+
+    // Auto-silence when picked up by Terrorist, or by CT using M4A1-S
+    if (cs_get_user_team(id) == CS_TEAM_T || (cs_get_user_team(id) == CS_TEAM_CT && g_iM4Choice[id] == CHOICE_M4A1_S))
+    {
+        if (get_pcvar_num(pCvar_AutoSilenceM4A1) && !cs_get_weapon_silen(iWpn))
+        {
+            cs_set_weapon_silen(iWpn, 1, 0);
+        }
+    }
+
+    return HAM_IGNORED;
+}
+
 public OnM4Deploy_Post(iWpn)
 {
     if (!get_pcvar_num(pCvar_Enable) || !pev_valid(iWpn))
@@ -136,10 +154,19 @@ public OnM4Deploy_Post(iWpn)
     if (id < 1 || id > MaxClients || !is_user_alive(id))
         return HAM_IGNORED;
 
-    if (cs_get_user_team(id) != CS_TEAM_CT)
-        return HAM_IGNORED;
+    if (cs_get_user_team(id) == CS_TEAM_CT)
+    {
+        ApplyM4Model(id, iWpn);
+    }
+    else if (cs_get_user_team(id) == CS_TEAM_T)
+    {
+        // Terrorist wields scavenged M4A1-S: auto-silence
+        if (get_pcvar_num(pCvar_AutoSilenceM4A1) && !cs_get_weapon_silen(iWpn))
+        {
+            cs_set_weapon_silen(iWpn, 1, 0);
+        }
+    }
 
-    ApplyM4Model(id, iWpn);
     return HAM_IGNORED;
 }
 
@@ -155,13 +182,20 @@ public Event_CurWeapon(id)
     if (wid != CSW_M4A1)
         return;
 
-    if (cs_get_user_team(id) != CS_TEAM_CT)
+    new iWpn = fm_find_ent_by_owner(-1, "weapon_m4a1", id);
+    if (!pev_valid(iWpn))
         return;
 
-    new iWpn = fm_find_ent_by_owner(-1, "weapon_m4a1", id);
-    if (pev_valid(iWpn))
+    if (cs_get_user_team(id) == CS_TEAM_CT)
     {
         ApplyM4Model(id, iWpn);
+    }
+    else if (cs_get_user_team(id) == CS_TEAM_T)
+    {
+        if (get_pcvar_num(pCvar_AutoSilenceM4A1) && !cs_get_weapon_silen(iWpn))
+        {
+            cs_set_weapon_silen(iWpn, 1, 0);
+        }
     }
 }
 
